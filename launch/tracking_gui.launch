@@ -1,0 +1,6 @@
+<launch>
+	<node pkg="tracking_gui"
+          type="tracking_gui"
+          name="tracking" output="screen" clear_params="true"
+          required="true"/>
+</launch>

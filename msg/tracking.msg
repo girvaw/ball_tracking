@@ -1,0 +1,11 @@
+int16 hue_upper
+int16 hue_lower
+int16 saturation_upper
+int16 saturation_lower
+int16 value_upper
+int16 value_lower
+int16 hough_min_dist
+int16 hough_param_1
+int16 hough_param_2
+bool show_hsv_window
+bool show_hough_depth_image

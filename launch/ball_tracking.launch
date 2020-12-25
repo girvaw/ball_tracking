@@ -1,0 +1,8 @@
+<launch>
+	<rosparam file="$(find ball_tracking)/config/ball_tracking.yaml"/>
+
+	<node pkg="ball_tracking"
+          type="ball_tracking_node"
+          name="ball_tracking" output="screen" clear_params="true"
+          required="true"/>
+</launch>

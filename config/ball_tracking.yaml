@@ -1,0 +1,13 @@
+five_axis_robot:
+  hsv_variables:
+    h_upper: 66
+    h_lower: 33
+    s_upper: 264
+    s_lower: 86
+    v_upper: 295
+    v_lower: 23
+
+  hough_variables:
+    minimum_distance: 15
+    param1: 253
+    param2: 17

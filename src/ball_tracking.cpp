@@ -3,7 +3,7 @@
 
 #include <sensor_msgs/image_encodings.h>
 
-FiveAxisTracking::FiveAxisTracking () :
+BallTracking::BallTracking () :
     image_topic_("/kinect2/sd/image_color_rect"),
     depth_topic_("/kinect2/sd/image_depth")
 {
@@ -22,30 +22,30 @@ FiveAxisTracking::FiveAxisTracking () :
     // Centre detection threshold
     nh_.param("/five_axis_robot/hough_variables/hough_param_2", hough_param_2_, 13);
 
-	image_sub_ = nh_.subscribe (image_topic_, 1, &FiveAxisTracking::image_cb, this);
-	depth_sub_ = nh_.subscribe (depth_topic_, 1, &FiveAxisTracking::depth_cb, this);
+	image_sub_ = nh_.subscribe (image_topic_, 1, &BallTracking::image_cb, this);
+	depth_sub_ = nh_.subscribe (depth_topic_, 1, &BallTracking::depth_cb, this);
 
     image_pub_ = nh_.advertise<sensor_msgs::Image> ("five_axis_image", 5);
     depth_pub_ = nh_.advertise<sensor_msgs::Image> ("five_axis_depth_image", 5);
 
     ball_target_pub_ = nh_.advertise<geometry_msgs::PointStamped> ("ball_target_point", 30);
 
-    tracking_params_sub_ = nh_.subscribe("tracking_params", 1, &FiveAxisTracking::tracking_params_cb, this);
+    tracking_params_sub_ = nh_.subscribe("tracking_params", 1, &BallTracking::tracking_params_cb, this);
 
     tfListener_ptr_ = std::make_shared<tf2_ros::TransformListener>(tfBuffer_);
 }
 
-void FiveAxisTracking::image_cb (const sensor_msgs::Image& bgrImage)
+void BallTracking::image_cb (const sensor_msgs::Image& bgrImage)
 {
     track_ball(bgrImage);
 }
 
-void FiveAxisTracking::depth_cb (const sensor_msgs::Image& depthImage)
+void BallTracking::depth_cb (const sensor_msgs::Image& depthImage)
 {
     add_ball_circles(depthImage);
 }
 
-void FiveAxisTracking::tracking_params_cb(ball_tracking::tracking params)
+void BallTracking::tracking_params_cb(ball_tracking::tracking params)
 {
     hu_ = params.hue_upper;
     hl_ = params.hue_lower;
@@ -61,7 +61,7 @@ void FiveAxisTracking::tracking_params_cb(ball_tracking::tracking params)
     show_hough_depth_image_ = params.show_hough_depth_image;
 }
 
-void FiveAxisTracking::track_ball(const sensor_msgs::Image& msg)
+void BallTracking::track_ball(const sensor_msgs::Image& msg)
 {
     std::vector<cv::Vec3f> VectorCirc;
     try
@@ -93,7 +93,7 @@ void FiveAxisTracking::track_ball(const sensor_msgs::Image& msg)
                  hough_param_2_, 1, 30);
 }
 
-void FiveAxisTracking::add_ball_circles(const sensor_msgs::Image& depthImage)
+void BallTracking::add_ball_circles(const sensor_msgs::Image& depthImage)
 {
     if (cv_bgr_ptr_ == static_cast<boost::shared_ptr<cv_bridge::CvImage>>(nullptr))
         return;
@@ -123,7 +123,7 @@ void FiveAxisTracking::add_ball_circles(const sensor_msgs::Image& depthImage)
 
         float z = cv_depth_ptr->image.at<float>(depth_centre_px);
         float x = z * image_helper_.fov_depth_width_ * (centre_px.x - cv_depth_ptr->image.size().width / 2.0) / cv_depth_ptr->image.size().width;
-        float y = -(z * image_helper_.fov_depth_height_ * (centre_px.y - cv_depth_ptr->image.size().height / 2.0) / cv_depth_ptr->image.size().height);
+        float y = -(z * image_helper_.fov_depth_height_ * (centre_px.y - cv_depth_ptr->image.size().height / 2.0) / cv_depth_ptr->image.size().height); 
 
         Point3f centre(x*0.001, y*0.001, z*0.001); // cartesian in metres
 
@@ -168,7 +168,7 @@ void FiveAxisTracking::add_ball_circles(const sensor_msgs::Image& depthImage)
     image_pub_.publish(cv_bgr_ptr_->toImageMsg());
 }
 
-void FiveAxisTracking::publishBallPosition(const Point3f& centre)
+void BallTracking::publishBallPosition(const Point3f& centre)
 {
     geometry_msgs::PointStamped target_point_msg;
              target_point_msg.header.frame_id = "kinect2_ir_optical_frame";
@@ -183,7 +183,7 @@ int
 main (int argc, char **argv)
 {
   ros::init (argc, argv, "ball_tracking_node");
-  FiveAxisTracking fat; //this loads up the node
+  BallTracking fat; //this loads up the node
   ros::spin (); //where she stops nobody knows
   return 0;
 }

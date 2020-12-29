@@ -17,10 +17,10 @@
 using namespace cv;
 namespace enc = sensor_msgs::image_encodings;
 
-class FiveAxisTracking
+class BallTracking
 {
 public:
-  FiveAxisTracking () ;
+  BallTracking () ;
   void image_cb (const sensor_msgs::Image& bgrImage);
   void depth_cb (const sensor_msgs::Image& depthImage);
   void tracking_params_cb(ball_tracking::tracking params);
